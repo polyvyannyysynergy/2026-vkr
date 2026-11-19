@@ -1,0 +1,51 @@
+{% extends "base.html" %}{% from "_macros.html" import status_badge, field %}
+{% block title %}Обработка {{ req.number }}{% endblock %}
+{% block content %}
+<h1 class="h4 page-title mb-3">Обработка заявки № {{ req.number }} {{ status_badge(req.status) }}</h1>
+{% set tc = req.type_check %}{% if tc and tc.suggested_type and req.status.code in open_codes %}
+<div class="alert alert-warning" role="note"><strong>Локальная ИИ:</strong> по цели заявки «{{ req.purpose }}», возможно, нужен вид «{{ tc.suggested_type.name }}», а выбран «{{ req.cert_type.name }}». Проверьте и при необходимости свяжитесь со студентом. Решение — за сотрудником.</div>
+{% endif %}
+<div class="row g-3">
+<div class="col-lg-7">
+  <div class="card mb-3"><div class="card-body">
+    <h2 class="h6 text-muted">Студент</h2>
+    {% set st = req.student %}
+    <div class="fw-semibold">{{ st.user.full_name }}</div>
+    <div class="small text-muted">Зач. книжка {{ st.record_book_no }} · {{ st.group_code }} · {{ st.course }} курс · {{ st.study_form_name }} форма · {{ st.faculty }}</div>
+  </div></div>
+  <div class="card"><div class="card-body">{% include "_req_details.html" %}</div></div>
+  {% if vform %}
+  <div class="card mt-3"><div class="card-body">
+    <h2 class="h6 text-muted">Данные справки-вызова <span class="fw-normal">(форма — приказ Минобрнауки России № 1368)</span></h2>
+    <form method="post" action="{{ url_for('staff.vyzov', req_id=req.id) }}" novalidate>{{ vform.hidden_tag() }}
+      {{ field(vform.name_dat) }}
+      {{ field(vform.basis) }}
+      <div class="row"><div class="col-md-6">{{ field(vform.period_from) }}</div><div class="col-md-6">{{ field(vform.period_to) }}</div></div>
+      <div class="small text-muted mb-2">Период — по календарному учебному графику группы; без этих данных справку нельзя перевести в «Готова к выдаче».</div>
+      <button class="btn btn-outline-primary btn-sm">Сохранить данные вызова</button>
+    </form>
+  </div></div>
+  {% endif %}
+</div>
+<div class="col-lg-5">
+  <div class="card mb-3"><div class="card-body">
+    <h2 class="h6 text-muted">Действие</h2>
+    {% if targets %}
+    <form method="post" novalidate>{{ form.hidden_tag() }}
+      {{ field(form.to_status) }}
+      {{ field(form.comment) }}
+      <div id="reject-hint" class="small text-danger mb-2">При отклонении причина обязательна — она будет показана студенту.</div>
+      <button class="btn btn-primary">Применить</button>
+    </form>
+    {% else %}<p class="text-muted mb-0">Заявка закрыта, изменение статуса недоступно.</p>{% endif %}
+    {% if req.can_print %}
+    <hr><a class="btn btn-outline-secondary btn-sm" href="{{ url_for('staff.print_cert', req_id=req.id) }}">Печатная форма справки</a>
+    <a class="btn btn-outline-secondary btn-sm" href="{{ url_for('staff.pdf', req_id=req.id) }}">PDF</a>
+    {% elif req.is_vyzov and req.status.code in ('PREP','READY','ISSUED') %}<hr><p class="small text-muted mb-0">Печать справки-вызова — после заполнения её сведений.</p>
+    {% elif not req.cert_type.printable %}<hr><p class="small text-muted mb-0">Справка оформляется на бланке установленного образца вне АИС; в системе фиксируются сроки и выдача.</p>{% endif %}
+  </div></div>
+  <div class="card"><div class="card-body"><h2 class="h6 text-muted mb-3">История статусов</h2>{% include "_history.html" %}</div></div>
+</div>
+</div>
+<a class="btn btn-link mt-2" href="{{ url_for('staff.registry') }}">← К реестру</a>
+{% endblock %}

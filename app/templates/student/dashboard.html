@@ -1,0 +1,39 @@
+{% extends "base.html" %}{% from "_macros.html" import status_badge %}
+{% block title %}Личный кабинет{% endblock %}
+{% block content %}
+<h1 class="h4 page-title mb-3">Личный кабинет студента</h1>
+<div class="row g-3 mb-3">
+  <div class="col-lg-5"><div class="card h-100"><div class="card-body">
+    <h2 class="h6 text-muted">Учётные данные</h2>
+    <div class="fs-5 fw-semibold">{{ st.user.full_name }}</div>
+    <table class="table table-sm mt-2 mb-0">
+      <tr><td class="text-muted">Зачётная книжка</td><td>{{ st.record_book_no }}</td></tr>
+      <tr><td class="text-muted">Факультет</td><td>{{ st.faculty }}</td></tr>
+      <tr><td class="text-muted">Направление</td><td>{{ st.direction }}</td></tr>
+      <tr><td class="text-muted">Группа, курс</td><td>{{ st.group_code }}, {{ st.course }} курс</td></tr>
+      <tr><td class="text-muted">Форма обучения</td><td>{{ st.study_form_name }}</td></tr>
+    </table>
+  </div></div></div>
+  <div class="col-lg-7"><div class="card h-100"><div class="card-body">
+    <h2 class="h6 text-muted">Мои заявки</h2>
+    <div class="d-flex gap-4 flex-wrap mb-3">
+      <div><div class="stat-num">{{ total }}</div><div class="small text-muted">всего</div></div>
+      {% for name, n in counts.items() %}<div><div class="stat-num">{{ n }}</div><div class="small text-muted">{{ name }}</div></div>{% endfor %}
+    </div>
+    <a class="btn btn-primary" href="{{ url_for('student.new_request') }}">Заказать справку</a>
+    <a class="btn btn-outline-secondary" href="{{ url_for('student.my_requests') }}">Все заявки</a>
+  </div></div></div>
+</div>
+<div class="card"><div class="card-body">
+  <h2 class="h6 text-muted">Последние заявки</h2>
+  <table class="table table-hover mb-0">
+    <thead><tr><th>Номер</th><th>Справка</th><th>Подана</th><th>Плановая готовность</th><th>Статус</th></tr></thead>
+    <tbody>
+    {% for r in recent %}
+    <tr><td class="text-nowrap"><a href="{{ url_for('student.request_card', req_id=r.id) }}">{{ r.number }}</a></td><td>{{ r.cert_type.name }}</td>
+      <td>{{ r.created_at|dt }}</td><td>{{ r.planned_date.strftime('%d.%m.%Y') }}</td><td>{{ status_badge(r.status) }}</td></tr>
+    {% else %}<tr><td colspan="5" class="text-muted">Заявок пока нет</td></tr>{% endfor %}
+    </tbody>
+  </table>
+</div></div>
+{% endblock %}

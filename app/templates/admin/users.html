@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}Пользователи{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+<h1 class="h4 page-title mb-0">Пользователи</h1>
+<div><a class="btn btn-sm {{ 'btn-secondary' if not role else 'btn-outline-secondary' }}" href="{{ url_for('admin.users') }}">все</a>
+{% for r in roles %}<a class="btn btn-sm {{ 'btn-secondary' if role == r.code else 'btn-outline-secondary' }}" href="{{ url_for('admin.users', role=r.code) }}">{{ r.name }}</a> {% endfor %}
+<a class="btn btn-primary btn-sm ms-2" href="{{ url_for('admin.user_new') }}">Добавить</a></div></div>
+<div class="card"><div class="card-body">
+<table class="table table-sm table-hover mb-0"><thead><tr><th>Логин</th><th>ФИО</th><th>Роль</th><th>Группа</th><th>Последний вход</th><th>Состояние</th><th></th></tr></thead>
+{% for u in items %}<tr><td><code>{{ u.login }}</code></td><td>{{ u.full_name }}</td><td>{{ u.role.name }}</td><td>{{ u.student.group_code if u.student else '' }}</td><td>{{ u.last_login_at|dt }}</td>
+<td>{% if not u.is_active %}<span class="badge text-bg-secondary">заблокирована</span>{% elif u.locked_until and u.locked_until > now %}<span class="badge text-bg-warning">временная блокировка</span>{% else %}<span class="badge text-bg-success">активна</span>{% endif %}</td>
+<td><form method="post" action="{{ url_for('admin.user_toggle', user_id=u.id) }}"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button class="btn btn-outline-secondary btn-sm">{{ 'Заблокировать' if u.is_active else 'Разблокировать' }}</button></form></td></tr>{% endfor %}
+</table></div></div>
+{% endblock %}

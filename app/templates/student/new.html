@@ -1,0 +1,28 @@
+{% extends "base.html" %}{% from "_macros.html" import field %}
+{% block title %}Новая заявка{% endblock %}
+{% block content %}
+<h1 class="h4 page-title mb-3">Заявка на получение справки</h1>
+<div class="row g-3">
+<div class="col-lg-7"><div class="card"><div class="card-body">
+<form method="post" novalidate>
+  {{ form.hidden_tag() }}
+  {{ field(form.cert_type) }}
+  {{ field(form.purpose) }}
+  <div class="row"><div class="col-md-4">{{ field(form.copies) }}</div>
+  <div class="col-md-8">{{ field(form.delivery) }}</div></div>
+  <div id="post-box">{{ field(form.post_address) }}</div>
+  {{ field(form.comment) }}
+  <button class="btn btn-primary">Подать заявку</button>
+  <a class="btn btn-link" href="{{ url_for('student.dashboard') }}">Отмена</a>
+</form>
+</div></div></div>
+<div class="col-lg-5"><div class="card"><div class="card-body">
+  <h2 class="h6 text-muted">Справочник справок и сроки изготовления</h2>
+  <table class="table table-sm mb-2">
+    <thead><tr><th>Справка</th><th class="text-end">Срок, раб. дн.</th><th class="text-end">Макс. экз.</th></tr></thead>
+    {% for t in types %}<tr><td>{{ t.name }}{% if not t.printable %} <span class="badge text-bg-light">бланк</span>{% elif not t.electronic %} <span class="badge text-bg-light">на бумаге</span>{% endif %}</td><td class="text-end">{{ t.lead_days }}</td><td class="text-end">{{ t.max_copies }}</td></tr>{% endfor %}
+  </table>
+  <p class="small text-muted mb-0">Плановая дата рассчитывается автоматически: срок отсчитывается со следующего рабочего дня, выходные и праздничные дни не учитываются; заявка, поданная после 17:00, считается поданной на следующий день. Справки с пометкой «бланк» оформляются на бланке установленного образца, с пометкой «на бумаге» — печатаются в АИС с подписью и печатью; те и другие выдаются только лично или почтой.</p>
+</div></div></div>
+</div>
+{% endblock %}

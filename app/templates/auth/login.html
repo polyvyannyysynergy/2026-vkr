@@ -1,0 +1,20 @@
+{% extends "base.html" %}{% from "_macros.html" import field %}
+{% block title %}Вход{% endblock %}
+{% block content %}
+<div class="login-wrap">
+  <div class="text-center mb-4">
+    <div class="page-title fs-3">АИС «Справки»</div>
+    <div class="text-muted">Учёт заявок студентов на получение справок<br>{{ org_name }}</div>
+  </div>
+  <div class="card"><div class="card-body p-4">
+    <h1 class="h5 mb-3">Вход в систему</h1>
+    <form method="post" novalidate>
+      {{ form.hidden_tag() }}
+      {{ field(form.login) }}
+      {{ field(form.password) }}
+      <button class="btn btn-primary w-100">Войти</button>
+    </form>
+  </div></div>
+  <p class="text-muted small mt-3 text-center">После 5 неудачных попыток вход блокируется на 15 минут.<br>Все действия пользователей регистрируются в журнале.</p>
+</div>
+{% endblock %}

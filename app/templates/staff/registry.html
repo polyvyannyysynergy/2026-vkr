@@ -1,0 +1,44 @@
+{% extends "base.html" %}{% from "_macros.html" import status_badge, pager_nav %}
+{% block title %}Реестр заявок{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+<h1 class="h4 page-title mb-0">Реестр заявок {% if args.get('overdue') == '1' %}<span class="badge text-bg-danger">просроченные</span>{% endif %}</h1>
+<div><a class="btn btn-primary btn-sm" href="{{ url_for('staff.register') }}">Зарегистрировать заявку</a>
+<a class="btn btn-outline-success btn-sm" href="{{ url_for('staff.export_csv', **args) }}">Экспорт CSV</a></div></div>
+<form class="card mb-3" method="get"><div class="card-body row g-2 align-items-end">
+  <div class="col-md-3"><label class="form-label small">Поиск (номер, ФИО, № зач. книжки)</label>
+    <input class="form-control form-control-sm" name="q" value="{{ args.get('q','') }}"></div>
+  <div class="col-md-2"><label class="form-label small">Канал</label>
+    <select class="form-select form-select-sm" name="channel"><option value="">все</option>
+    {% for code, name in channels.items() %}<option value="{{ code }}" {{ 'selected' if args.get('channel') == code }}>{{ name }}</option>{% endfor %}</select></div>
+  <div class="col-md-2"><label class="form-label small">Статус</label>
+    <select class="form-select form-select-sm" name="status"><option value="">все</option>
+    {% for s in statuses %}<option value="{{ s.code }}" {{ 'selected' if args.get('status') == s.code }}>{{ s.name }}</option>{% endfor %}</select></div>
+  <div class="col-md-3"><label class="form-label small">Тип справки</label>
+    <select class="form-select form-select-sm" name="type"><option value="">все</option>
+    {% for t in types %}<option value="{{ t.code }}" {{ 'selected' if args.get('type') == t.code }}>{{ t.name }}</option>{% endfor %}</select></div>
+  <div class="col-md-2"><label class="form-label small">Группа</label>
+    <select class="form-select form-select-sm" name="group"><option value="">все</option>
+    {% for gr in groups %}<option {{ 'selected' if args.get('group') == gr }}>{{ gr }}</option>{% endfor %}</select></div>
+  <div class="col-md-2"><label class="form-label small">Подана с</label><input type="date" class="form-control form-control-sm" name="from" value="{{ args.get('from','') }}"></div>
+  <div class="col-md-2"><label class="form-label small">по</label><input type="date" class="form-control form-control-sm" name="to" value="{{ args.get('to','') }}"></div>
+  <div class="col-md-2 pb-1"><div class="form-check"><input class="form-check-input" type="checkbox" name="overdue" value="1" id="ov" {{ 'checked' if args.get('overdue') == '1' }}><label class="form-check-label small" for="ov">только просроченные</label></div></div>
+  <div class="col-md-2"><button class="btn btn-primary btn-sm w-100">Найти</button></div>
+  <div class="col-md-2"><a class="btn btn-outline-secondary btn-sm w-100" href="{{ url_for('staff.registry') }}">Сбросить</a></div>
+</div></form>
+<div class="card"><div class="card-body">
+<div class="small text-muted mb-2">Найдено заявок: {{ pager.total }}</div>
+<table class="table table-hover table-sm mb-2">
+<thead><tr><th>Номер</th><th>Подана</th><th>Канал</th><th>Студент</th><th>Группа</th><th>Справка</th><th>Экз.</th><th>Получение</th><th>Плановая дата</th><th>Статус</th><th>Исполнитель</th></tr></thead>
+<tbody>
+{% for r in pager.items %}
+{% set late = r.is_overdue(today) %}
+<tr><td class="text-nowrap"><a href="{{ url_for('staff.process', req_id=r.id) }}">{{ r.number }}</a></td><td>{{ r.created_at|dt }}</td>
+<td>{{ r.channel_name }}</td><td>{{ r.student.user.full_name }}</td><td>{{ r.student.group_code }}</td><td>{{ r.cert_type.name }}{% set tc = r.type_check %}{% if tc and tc.suggested_type and r.status.code in open_codes %} <span class="badge text-bg-warning" title="Локальная ИИ: по цели заявки, возможно, нужен вид «{{ tc.suggested_type.name }}»">ИИ: проверить вид</span>{% endif %}</td><td>{{ r.copies }}</td>
+<td>{{ r.delivery_name }}</td><td class="{{ 'overdue' if late }}">{{ r.planned_date.strftime('%d.%m.%Y') }}</td>
+<td>{{ status_badge(r.status) }}</td><td>{{ r.operator.full_name if r.operator else '—' }}</td></tr>
+{% else %}<tr><td colspan="11" class="text-muted">По условиям отбора заявок нет</td></tr>{% endfor %}
+</tbody></table>
+{{ pager_nav(pager, 'staff.registry', args) }}
+</div></div>
+{% endblock %}

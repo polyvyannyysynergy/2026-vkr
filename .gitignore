@@ -1,0 +1,8 @@
+# окружение и кэши Python
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+# секрет сессии, создаётся при первом запуске — не публиковать
+instance/secret.key
+.DS_Store

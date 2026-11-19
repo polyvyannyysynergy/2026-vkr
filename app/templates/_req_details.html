@@ -1,0 +1,15 @@
+<table class="table table-sm mb-0">
+<tr><td class="text-muted w-25">Канал поступления</td><td>{{ req.channel_name }}{% if req.ext_number %} <span class="text-muted">(№ {{ req.ext_number }})</span>{% endif %}</td></tr>
+<tr><td class="text-muted">Тип справки</td><td>{{ req.cert_type.name }} <span class="text-muted">({{ req.cert_type.code }})</span></td></tr>
+<tr><td class="text-muted">{{ 'Работодатель' if req.is_vyzov else 'Место предоставления' }}</td><td>{{ req.purpose }}</td></tr>
+<tr><td class="text-muted">Экземпляров</td><td>{{ req.copies }}</td></tr>
+<tr><td class="text-muted">Способ получения</td><td>{{ req.delivery_name }}{% if req.post_address %}: {{ req.post_address }}{% endif %}</td></tr>
+<tr><td class="text-muted">Подана</td><td>{{ req.created_at|dt }}</td></tr>
+<tr><td class="text-muted">Плановая дата готовности</td><td>{{ req.planned_date.strftime('%d.%m.%Y') }}
+{% if req.is_overdue(today) %}<span class="overdue ms-2">просрочена</span>{% endif %}</td></tr>
+{% if req.is_vyzov and req.period_from %}<tr><td class="text-muted">Справка-вызов</td><td>{{ req.name_dat }}; {{ VYZ_BASIS.get(req.basis, '') }}; с {{ req.period_from.strftime('%d.%m.%Y') }} по {{ req.period_to.strftime('%d.%m.%Y') }} ({{ req.vyzov_days }} календ. дн.)</td></tr>{% endif %}
+{% if req.ready_at %}<tr><td class="text-muted">Подготовлена</td><td>{{ req.ready_at|dt }}</td></tr>{% endif %}
+{% if req.operator %}<tr><td class="text-muted">Исполнитель</td><td>{{ req.operator.full_name }}</td></tr>{% endif %}
+{% if req.student_comment %}<tr><td class="text-muted">Комментарий студента</td><td>{{ req.student_comment }}</td></tr>{% endif %}
+{% if req.reject_reason %}<tr><td class="text-muted">Причина отклонения</td><td class="text-danger">{{ req.reject_reason }}</td></tr>{% endif %}
+</table>

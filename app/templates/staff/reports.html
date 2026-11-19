@@ -1,0 +1,37 @@
+{% extends "base.html" %}{% from "_macros.html" import status_badge %}
+{% block title %}Отчёт{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+<h1 class="h4 page-title mb-0">Статистика обработки заявок</h1>
+<a class="btn btn-outline-success btn-sm" href="{{ url_for('staff.reports_csv', **request.args) }}">Экспорт CSV</a></div>
+<form class="card mb-3" method="get"><div class="card-body row g-2 align-items-end">
+<div class="col-md-2"><label class="form-label small">Период с</label><input type="date" class="form-control form-control-sm" name="from" value="{{ d_from or '' }}"></div>
+<div class="col-md-2"><label class="form-label small">по</label><input type="date" class="form-control form-control-sm" name="to" value="{{ d_to or '' }}"></div>
+<div class="col-md-2"><button class="btn btn-primary btn-sm">Сформировать</button></div></div></form>
+<div class="row g-3 mb-3">
+{% for label, val in [('Заявок за период', s.total), ('Подготовлено', s.done), ('Среднее время, календ. дн.', s.avg_days), ('Среднее время, раб. дн.', s.avg_workdays), ('Подготовлено в срок, %', s.on_time_pct), ('Просрочено сейчас', s.overdue|length)] %}
+<div class="col-md-2"><div class="card h-100"><div class="card-body"><div class="stat-num">{{ val|num }}</div><div class="small text-muted">{{ label }}</div></div></div></div>
+{% endfor %}
+</div>
+<div class="row g-3">
+<div class="col-lg-7"><div class="card"><div class="card-body">
+<h2 class="h6 text-muted">По типам справок</h2>
+<table class="table table-sm mb-0"><thead><tr><th>Тип справки</th><th class="text-end">Подано</th><th class="text-end">Подготовлено</th><th class="text-end">С нарушением срока</th><th class="w-25"></th></tr></thead>
+{% set mx = (s.by_type.values()|map(attribute='total')|max) or 1 %}
+{% for code, t in s.by_type.items() %}<tr><td>{{ t.name }}</td><td class="text-end">{{ t.total }}</td><td class="text-end">{{ t.done }}</td><td class="text-end">{{ t.late }}</td>
+<td><div class="progress" style="height:.6rem"><div class="progress-bar" style="width: {{ (100 * t.total / mx)|round(0) }}%"></div></div></td></tr>{% endfor %}
+</table></div></div></div>
+<div class="col-lg-5"><div class="card mb-3"><div class="card-body">
+<h2 class="h6 text-muted">По каналам поступления</h2>
+<table class="table table-sm mb-0"><thead><tr><th>Канал</th><th class="text-end">Подано</th><th class="text-end">Подготовлено</th><th class="text-end">С нарушением срока</th></tr></thead>
+{% for code, c in s.by_channel.items() %}<tr><td>{{ c.name }}</td><td class="text-end">{{ c.total }}</td><td class="text-end">{{ c.done }}</td><td class="text-end">{{ c.late }}</td></tr>{% endfor %}
+</table></div></div>
+<div class="card mb-3"><div class="card-body">
+<h2 class="h6 text-muted">По статусам</h2>
+<table class="table table-sm mb-0">{% for code, st in s.by_status.items() %}<tr><td><span class="badge text-bg-{{ st.css }}">{{ st.name }}</span></td><td class="text-end">{{ st.total }}</td></tr>{% endfor %}</table>
+</div></div>
+<div class="card"><div class="card-body"><h2 class="h6 text-muted">Просроченные незакрытые заявки</h2>
+<table class="table table-sm mb-0">{% for r in s.overdue %}<tr><td><a href="{{ url_for('staff.process', req_id=r.id) }}">{{ r.number }}</a></td><td>{{ r.cert_type.name }}</td><td class="overdue">{{ r.planned_date.strftime('%d.%m.%Y') }}</td></tr>{% else %}<tr><td class="text-muted">Нет</td></tr>{% endfor %}</table>
+</div></div></div>
+</div>
+{% endblock %}

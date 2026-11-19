@@ -1,0 +1,27 @@
+{% macro status_badge(st) -%}
+<span class="badge text-bg-{{ st.css }}">{{ st.name }}</span>
+{%- endmacro %}
+
+{% macro field(f, cls="") -%}
+<div class="mb-3 {{ cls }}">
+  {% if f.type == "BooleanField" %}
+  <div class="form-check">{{ f(class="form-check-input") }} {{ f.label(class="form-check-label") }}</div>
+  {% else %}
+  {{ f.label(class="form-label") }}
+  {% set c = "form-select" if f.type == "SelectField" else "form-control" %}
+  {{ f(class=c ~ (" is-invalid" if f.errors else "")) }}
+  {% for e in f.errors %}<div class="invalid-feedback">{{ e }}</div>{% endfor %}
+  {% endif %}
+</div>
+{%- endmacro %}
+
+{% macro pager_nav(pager, endpoint, args) -%}
+{% if pager.pages > 1 %}
+<nav><ul class="pagination pagination-sm">
+{% for p in pager.iter_pages() %}
+  {% if p %}<li class="page-item {{ 'active' if p == pager.page }}"><a class="page-link" href="{{ url_for(endpoint, page=p, **args) }}">{{ p }}</a></li>
+  {% else %}<li class="page-item disabled"><span class="page-link">…</span></li>{% endif %}
+{% endfor %}
+</ul></nav>
+{% endif %}
+{%- endmacro %}

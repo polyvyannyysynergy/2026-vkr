@@ -1,0 +1,7 @@
+<ul class="timeline mb-0">
+{% for h in req.history %}
+<li><div class="small text-muted">{{ h.changed_at|dt }} · {{ h.author.full_name }}</div>
+<div>{% if h.from_status %}{{ h.from_status.name }} → {% endif %}<strong>{{ h.to_status.name }}</strong></div>
+{% if h.comment %}<div class="small">{{ h.comment }}</div>{% endif %}</li>
+{% endfor %}
+</ul>

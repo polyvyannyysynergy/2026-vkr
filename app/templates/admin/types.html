@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}Типы справок{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+<h1 class="h4 page-title mb-0">Справочник типов справок</h1>
+<a class="btn btn-primary btn-sm" href="{{ url_for('admin.type_edit') }}">Добавить тип</a></div>
+<div class="card"><div class="card-body">
+<table class="table table-hover mb-0">
+<thead><tr><th>Код</th><th>Наименование</th><th class="text-end">Срок, раб. дн.</th><th class="text-end">Макс. экз.</th><th>Шаблон АИС</th><th>Электронно</th><th>Доступна</th><th>Описание</th><th></th></tr></thead>
+{% for t in items %}<tr class="{{ 'text-muted' if not t.is_active }}"><td><code>{{ t.code }}</code></td><td>{{ t.name }}</td><td class="text-end">{{ t.lead_days }}</td><td class="text-end">{{ t.max_copies }}</td>
+<td>{{ 'да' if t.printable else 'бланк' }}</td><td>{{ 'да' if t.printable and t.electronic else 'нет' }}</td><td>{% if t.is_active %}<span class="badge text-bg-success">да</span>{% else %}<span class="badge text-bg-secondary">нет</span>{% endif %}</td>
+<td class="small">{{ t.description or '' }}</td><td><a class="btn btn-outline-primary btn-sm" href="{{ url_for('admin.type_edit', type_id=t.id) }}">Изменить</a></td></tr>{% endfor %}
+</table></div></div>
+{% endblock %}

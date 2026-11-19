@@ -1,0 +1,54 @@
+{% extends "base.html" %}{% from "_macros.html" import field %}
+{% block title %}Регистрация заявки{% endblock %}
+{% block content %}
+<h1 class="h4 page-title mb-3">Регистрация заявки из другого канала</h1>
+<div class="row g-3">
+<div class="col-lg-7">
+{% if appeal %}
+<div class="card mb-3"><div class="card-body">
+<form method="post" action="{{ url_for('staff.parse_appeal') }}" novalidate>
+  {{ appeal.hidden_tag() }}
+  {{ appeal.text.label(class="form-label") }}
+  {{ appeal.text(class="form-control" ~ (" is-invalid" if appeal.text.errors else ""), rows=4,
+                 placeholder="Вставьте текст письма, сообщения куратора или записи МФСО") }}
+  {% for e in appeal.text.errors %}<div class="invalid-feedback">{{ e }}</div>{% endfor %}
+  <button class="btn btn-outline-primary mt-2">Разобрать обращение</button>
+  <div class="form-text">Локальная языковая модель на сервере вуза только предлагает поля; данные не уходят за пределы вуза, текст обращения не сохраняется.</div>
+</form>
+</div></div>
+{% endif %}
+{% if suggestion %}
+<div class="alert alert-info small">
+  <b>Поля предложены моделью — проверьте перед регистрацией.</b>
+  Заполнено: {{ suggestion.filled|join(", ") if suggestion.filled else "ничего не распознано" }}.
+  {% if suggestion.student %}{{ suggestion.student }}{% endif %}
+</div>
+{% endif %}
+<div class="card"><div class="card-body">
+<form method="post" action="{{ url_for('staff.register') }}" novalidate>
+  {{ form.hidden_tag() }}
+  <div class="row"><div class="col-md-6">{{ field(form.channel) }}</div>
+  <div class="col-md-6">{{ field(form.ext_number) }}</div></div>
+  {{ field(form.record_book_no) }}
+  {{ field(form.cert_type) }}
+  {{ field(form.purpose) }}
+  <div class="row"><div class="col-md-4">{{ field(form.copies) }}</div>
+  <div class="col-md-8">{{ field(form.delivery) }}</div></div>
+  <div id="post-box">{{ field(form.post_address) }}</div>
+  {{ field(form.comment) }}
+  <button class="btn btn-primary">Зарегистрировать</button>
+  <a class="btn btn-link" href="{{ url_for('staff.registry') }}">Отмена</a>
+</form>
+</div></div></div>
+<div class="col-lg-5"><div class="card"><div class="card-body">
+  <h2 class="h6 text-muted">Единый реестр заявок</h2>
+  <p class="small mb-2">Студент подаёт заявку в АИС сам. Заявки, принятые другими каналами, сотрудник деканата регистрирует здесь, чтобы все заявки попали в один реестр со сроками и статусами:</p>
+  <ul class="small mb-2">
+    <li><b>ЕЛК</b> — сервис «Заказ справок» единого личного кабинета (укажите номер заявки ЕЛК);</li>
+    <li><b>МФСО</b> — обращение в многофункциональный сервисный офис;</li>
+    <li><b>Куратор</b> — запрос, переданный куратором группы.</li>
+  </ul>
+  <p class="small text-muted mb-0">Плановая дата готовности считается так же, как для заявки из АИС: по рабочим дням от момента регистрации.</p>
+</div></div></div>
+</div>
+{% endblock %}

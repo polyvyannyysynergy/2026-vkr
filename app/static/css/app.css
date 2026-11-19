@@ -1,0 +1,36 @@
+/* Оформление АИС поверх Bootstrap 5 */
+:root { --ais-brand: #1f3a68; --ais-accent: #c8102e; }
+body { background: #f4f6f9; }
+.navbar-ais { background: var(--ais-brand); }
+.navbar-ais .nav-link { white-space: nowrap; }
+.navbar-ais .navbar-brand { font-weight: 600; letter-spacing: .02em; }
+.navbar-ais .navbar-brand .mark { display:inline-block; width:.6rem; height:1.2rem;
+  background: var(--ais-accent); margin-right:.5rem; vertical-align:-.15rem; }
+.page-title { font-weight: 600; color: var(--ais-brand); }
+.card { border: 0; box-shadow: 0 1px 2px rgba(0,0,0,.08); }
+.stat-num { font-size: 2rem; font-weight: 600; color: var(--ais-brand); }
+.table thead th { font-size: .85rem; color: #495057; background: #eef1f6; }
+.table td { font-size: .9rem; vertical-align: middle; }
+.timeline { list-style: none; padding-left: 0; border-left: 3px solid #ced4da; }
+.timeline li { position: relative; padding: 0 0 .9rem 1.2rem; }
+.timeline li::before { content:""; position:absolute; left:-.5rem; top:.35rem;
+  width:.75rem; height:.75rem; border-radius:50%; background: var(--ais-brand); }
+.login-wrap { max-width: 420px; margin: 8vh auto; }
+.overdue { color: var(--ais-accent); font-weight: 600; }
+.footer { font-size: .8rem; color: #6c757d; }
+/* печатная форма справки */
+.sheet { background:#fff; width: 210mm; min-height: 297mm; margin: 1rem auto;
+  padding: 20mm 20mm 20mm 25mm; font-family: "Times New Roman", serif; font-size: 14pt;
+  box-shadow: 0 0 6px rgba(0,0,0,.2); }
+.sheet .org { text-align:center; font-weight:bold; font-size: 15pt; }
+.sheet .dept { text-align:center; font-size: 11pt; border-bottom: 1px solid #000; padding-bottom: 2mm; }
+.sheet h1 { text-align:center; font-size: 16pt; font-weight: bold; margin-top: 14mm; }
+.sheet .num { text-align:center; font-size: 12pt; margin-bottom: 10mm; }
+.sheet p { text-indent: 12.5mm; text-align: justify; line-height: 1.5; margin: 0 0 3mm; }
+.sheet .sign { margin-top: 20mm; display:flex; justify-content: space-between; }
+.sheet .tear { margin: 8mm 0 6mm; text-align:center; font-size: 9pt; color:#555; }
+.sheet.vyzov .sign span:last-child { white-space: nowrap; }
+.sheet.vyzov .sign span:first-child { max-width: 60%; font-size: 10pt; }
+.sheet .foot { margin-top: 30mm; font-size: 9pt; color:#555; }
+@media print { body { background:#fff; } .no-print { display:none !important; }
+  .sheet { box-shadow:none; margin:0; width:auto; min-height:auto; } }

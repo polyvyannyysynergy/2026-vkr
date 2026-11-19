@@ -1,0 +1,14 @@
+{% extends "base.html" %}{% from "_macros.html" import pager_nav %}
+{% block title %}Журнал аудита{% endblock %}
+{% block content %}
+<h1 class="h4 page-title mb-3">Журнал действий пользователей</h1>
+<form class="mb-3 d-flex gap-2" method="get"><select class="form-select form-select-sm w-auto" name="action"><option value="">все события</option>
+{% for a in actions %}<option {{ 'selected' if a == action }}>{{ a }}</option>{% endfor %}</select><button class="btn btn-primary btn-sm">Показать</button></form>
+<div class="card"><div class="card-body">
+<table class="table table-sm mb-2"><thead><tr><th>Время</th><th>Пользователь</th><th>Событие</th><th>Объект</th><th>Подробности</th><th>IP</th></tr></thead>
+{% for e in pager.items %}<tr><td>{{ e.created_at|dt('%d.%m.%Y %H:%M:%S') }}</td><td>{{ e.user.login if e.user else '—' }}</td><td><code>{{ e.action }}</code></td>
+<td>{{ e.entity or '' }}{% if e.entity_id %} #{{ e.entity_id }}{% endif %}</td><td class="small">{{ e.details }}</td><td class="small">{{ e.ip or '' }}</td></tr>{% endfor %}
+</table>
+{{ pager_nav(pager, 'admin.audit_log', {'action': action} if action else {}) }}
+</div></div>
+{% endblock %}

@@ -1,0 +1,3 @@
+{"kind": "appeal", "file": "2026-11-13_v2-q30moe.raw.jsonl", "id": 20, "raw": {"cert_code": "VYZ", "purpose": "АО «Северсталь»", "copies": 1, "delivery": "DEAN", "full_name": "Мельников Арсений Олегович", "record_book_no": "2025-0012", "post_address": null}, "seconds": 9.46, "schema": "appeal"}
+{"kind": "type_check", "file": "2026-11-13_types-q30moe-run3-main.raw.jsonl", "id": 14, "raw": {"suitable_codes": ["VK"]}, "seconds": 2.83, "schema": "type_check"}
+{"kind": "type_check", "file": "2026-11-13_types-q30moe-run3-h2.raw.jsonl", "id": 217, "raw": {"suitable_codes": ["VYZ"]}, "seconds": 2.73, "schema": "type_check"}

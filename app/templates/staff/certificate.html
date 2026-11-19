@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><title>Справка {{ cert.number }}</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}"></head>
+<body>
+<div class="no-print text-center pt-3">
+  <button class="btn btn-primary btn-sm" data-print>Печать</button>
+  <a class="btn btn-outline-secondary btn-sm" href="{{ url_for('staff.pdf', req_id=req.id) }}">PDF</a>
+  <a class="btn btn-link btn-sm" href="{{ url_for('staff.process', req_id=req.id) }}">← К заявке</a>
+</div>
+<div class="sheet{{ ' vyzov' if cert.vyzov }}">
+  {% if cert.vyzov %}
+  <h1>{{ cert.title }}</h1>
+  <div class="num">от {{ cert.date }} № {{ cert.number }},<br>дающая право на предоставление гарантий и компенсаций<br>работникам, совмещающим работу с получением образования</div>
+  {% for p in cert.paragraphs %}<p>{{ p }}</p>{% endfor %}
+  <div class="sign"><span>{{ cert.signer }}</span><span>________________ / ________________</span></div>
+  <div class="mt-3">М.П.</div>
+  <div class="tear">- - - - - - - - - - - - - линия отрыва - - - - - - - - - - - - -</div>
+  {% for p in cert.stub %}<p>{{ p }}</p>{% endfor %}
+  <div class="sign"><span>{{ cert.signer }}</span><span>________________ / ________________</span></div>
+  <div class="mt-3">М.П.</div>
+  {% else %}
+  <div class="org">{{ cert.org }}</div>
+  <div class="dept">Деканат факультета</div>
+  <h1>{{ cert.title }}</h1>
+  <div class="num">№ {{ cert.number }} от {{ cert.date }}</div>
+  {% for p in cert.paragraphs %}<p>{{ p }}</p>{% endfor %}
+  <div class="sign"><span>Декан факультета</span><span>________________ / ________________</span></div>
+  <div class="mt-4">М.П.</div>
+  {% endif %}
+  <div class="foot">Сформировано АИС учёта заявок на справки. Экземпляров: {{ cert.copies }}. Демонстрационные данные.</div>
+</div>
+<script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body></html>
